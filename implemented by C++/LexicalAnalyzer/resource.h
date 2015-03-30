@@ -79,7 +79,7 @@ string keyWords[18] = {
 
 string error[3] = {
 	"the source code has illegal variables", "is an unrecognized identity",
-	"the string does not have an ending"
+	"the string does not end correctly"
 };
 
 #endif	/* _RESOURCETABLE_H */

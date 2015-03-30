@@ -113,7 +113,16 @@ public:
 			//other symbols
 			switch ( sourceCode[currentIndex] ) {
 				case '"':
-
+					currentIndex++;
+					col++;
+					while ( sourceCode[currentIndex] != '"' && currentIndex < sourceCode.length() ) {
+						currentIndex++;
+						col++;
+					}
+					if ( currentIndex == sourceCode.length() - 1 )
+						//throw an exception where the string does not end correctly
+						throw tuple<int, int, int, string> ( row, col, 2, sourceCode.substr
+						                                     ( startIndex, currentIndex - startIndex ) );
 				case '+':
 					currentIndex++;
 					col++;
@@ -135,8 +144,42 @@ public:
 				case '/':
 					currentIndex++;
 					col++;
-					var.ch = ch;
-					p = make_pair ( ADD, var );
+					//the following is a /* */ comments
+					if ( sourceCode[currentIndex] == '*' ) {
+						currentIndex++;
+						col++;
+					flag1:
+						while ( sourceCode[currentIndex] != '*' ) {
+							currentIndex++;
+							col++;
+						}
+						while ( sourceCode[currentIndex] == '*' ) {
+							currentIndex++;
+							col++;
+						}
+						if ( sourceCode[currentIndex] == '/' ) {
+							currentIndex++;
+							col++;
+						} else {
+							currentIndex++;
+							col++;
+							goto flag1;
+						}
+					}
+					//the following is a // comments
+					else if ( sourceCode[currentIndex] == '/' ) {
+						currentIndex++;
+						col++;
+						while ( sourceCode[currentIndex] != '\n' ) {
+							currentIndex++;
+							col++;
+						}
+					}
+					//the following is divide
+					else {
+						var.ch = ch;
+						p = make_pair ( ADD, var );
+					}
 					break;
 				case '|':
 					currentIndex++;
@@ -148,6 +191,8 @@ public:
 						p = make_pair ( OR, var );
 						break;
 					} else {
+						currentIndex++;
+						col++;
 						var.ch = ch;
 						p = make_pair ( BITOR, var );
 						break;
@@ -162,6 +207,8 @@ public:
 						p = make_pair ( AND, var );
 						break;
 					} else {
+						currentIndex++;
+						col++;
 						var.ch = ch;
 						p = make_pair ( BITAND, var );
 						break;
@@ -176,6 +223,8 @@ public:
 						p = make_pair ( EQUAL_LARGER, var );
 						break;
 					} else {
+						currentIndex++;
+						col++;
 						var.ch = ch;
 						p = make_pair ( LARGER, var );
 						break;
@@ -190,6 +239,8 @@ public:
 						p = make_pair ( EQUAL_SMALLER, var );
 						break;
 					} else {
+						currentIndex++;
+						col++;
 						var.ch = ch;
 						p = make_pair ( SMALLER, var );
 						break;
@@ -249,7 +300,8 @@ public:
 					p = make_pair ( COMMA, var );
 					break;
 				default:
-					throw tuple<int, int, int, string> ( row, col, 0, sourceCode.substr
+					//the current word is an unrecognized identity
+					throw tuple<int, int, int, string> ( row, col, 1, sourceCode.substr
 					                                     ( startIndex, currentIndex - startIndex ) );
 			}
 		}
