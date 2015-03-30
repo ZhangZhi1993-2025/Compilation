@@ -27,13 +27,16 @@ public:
 		int i = 0;
 		float f = 0.0f;
 		double d = 0.0;
-		char *str;
 		while ( currentIndex < sourceCode.length() ) {
 
 			/* skip the space,tab and enter symbols */
-			while ( sourceCode[currentIndex] == ' ' || sourceCode[currentIndex] == '\t' ) {
+			while ( sourceCode[currentIndex] == ' ' ) {
 				currentIndex++;
 				col++;
+			}
+			while ( sourceCode[currentIndex] == '\t' ) {
+				currentIndex++;
+				col += 4;
 			}
 			while ( sourceCode[currentIndex] == '\n' ) {
 				currentIndex++;
@@ -44,6 +47,7 @@ public:
 			/* pattern recognition */
 
 			startIndex = currentIndex;
+
 			//variable or key words
 			if ( isLetter ( sourceCode[currentIndex] ) || sourceCode[currentIndex] == '_' ) {
 				currentIndex++;
@@ -53,6 +57,7 @@ public:
 					currentIndex++;
 					col++;
 				}
+				//judge if the word is a key word
 				unsigned int num = isKeyWords ( sourceCode.substr ( startIndex, currentIndex - startIndex ) );
 				if ( num == 0 ) {	//variable
 					unsigned int start = strPool.length();
@@ -68,6 +73,7 @@ public:
 					return p;
 				}
 			}
+
 			//constants
 			if ( isDigit ( sourceCode[currentIndex] ) ) {
 				currentIndex++;
@@ -86,25 +92,168 @@ public:
 						col++;
 					}
 					if ( flag ) {
-						double d = strToDouble ( sourceCode.substr ( startIndex, currentIndex - startIndex ) );
+						//double constant
+						d = strToDouble ( sourceCode.substr ( startIndex, currentIndex - startIndex ) );
 						var.d = d;
 						p = make_pair ( DOUBLE, var );
 						return p;
-					} else		//throw an exception where the source code has illegal identities
+					} else
+						//throw an exception where the source code has illegal identities
 						throw tuple<int, int, int, string> ( row, col, 0, sourceCode.substr
 						                                     ( startIndex, currentIndex - startIndex ) );
 				} else {
-					int result = strToInt ( sourceCode.substr ( startIndex, currentIndex - startIndex ) );
-					var.i = result;
+					//int constant
+					i = strToInt ( sourceCode.substr ( startIndex, currentIndex - startIndex ) );
+					var.i = i;
 					p = make_pair ( INT, var );
 					return p;
 				}
 			}
+
 			//other symbols
 			switch ( sourceCode[currentIndex] ) {
+				case '"':
 
+				case '+':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( ADD, var );
+					break;
+				case '-':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( SUB, var );
+					break;
+				case '*':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( MUL, var );
+					break;
+				case '/':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( ADD, var );
+					break;
+				case '|':
+					currentIndex++;
+					col++;
+					if ( sourceCode[currentIndex] == '|' ) {
+						currentIndex++;
+						col++;
+						var.ch = ch;
+						p = make_pair ( OR, var );
+						break;
+					} else {
+						var.ch = ch;
+						p = make_pair ( BITOR, var );
+						break;
+					}
+				case '&':
+					currentIndex++;
+					col++;
+					if ( sourceCode[currentIndex] == '&' ) {
+						currentIndex++;
+						col++;
+						var.ch = ch;
+						p = make_pair ( AND, var );
+						break;
+					} else {
+						var.ch = ch;
+						p = make_pair ( BITAND, var );
+						break;
+					}
+				case '>':
+					currentIndex++;
+					col++;
+					if ( sourceCode[currentIndex] == '=' ) {
+						currentIndex++;
+						col++;
+						var.ch = ch;
+						p = make_pair ( EQUAL_LARGER, var );
+						break;
+					} else {
+						var.ch = ch;
+						p = make_pair ( LARGER, var );
+						break;
+					}
+				case '<':
+					currentIndex++;
+					col++;
+					if ( sourceCode[currentIndex] == '=' ) {
+						currentIndex++;
+						col++;
+						var.ch = ch;
+						p = make_pair ( EQUAL_SMALLER, var );
+						break;
+					} else {
+						var.ch = ch;
+						p = make_pair ( SMALLER, var );
+						break;
+					}
+				case '{':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( LBRACE, var );
+					break;
+				case '}':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( RBRACE, var );
+					break;
+				case '(':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( LBRACKET, var );
+					break;
+				case ')':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( RBRACKET, var );
+					break;
+				case '[':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( LINDEX, var );
+					break;
+				case ']':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( RINDEX, var );
+					break;
+				case '=':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( EQUAL, var );
+					break;
+				case ';':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( SEMICOLON, var );
+					break;
+				case ',':
+					currentIndex++;
+					col++;
+					var.ch = ch;
+					p = make_pair ( COMMA, var );
+					break;
+				default:
+					throw tuple<int, int, int, string> ( row, col, 0, sourceCode.substr
+					                                     ( startIndex, currentIndex - startIndex ) );
 			}
 		}
+
 		/* end of file */
 		var.ch = ch;
 		p = make_pair ( ENDOFFILE, var );
@@ -168,6 +317,10 @@ private:
 };
 
 int main() {
-	LexicalAnalyzer la;
-	return 0;
+	try {
+		LexicalAnalyzer la;
+		return 0;
+	} catch ( tuple<int, int, int, string> t ) {
+
+	}
 }

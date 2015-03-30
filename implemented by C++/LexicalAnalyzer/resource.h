@@ -61,6 +61,8 @@ string keyWords[18] = {
 #define SMALLER 109
 #define EQUAL_LARGER 110	//	'>='
 #define EQUAL_SMALLER 111	//	'<='
+#define BITOR 120
+#define BITAND 121
 
 /* bounds symbol */
 #define LBRACE 112			//	'{'
@@ -74,5 +76,10 @@ string keyWords[18] = {
 
 /* identity symbol */
 #define VAR 200
+
+string error[3] = {
+	"the source code has illegal variables", "is an unrecognized identity",
+	"the string does not have an ending"
+};
 
 #endif	/* _RESOURCETABLE_H */
