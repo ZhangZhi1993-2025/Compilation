@@ -1,19 +1,23 @@
 #include <iostream>
 #include <resource.h>
 #include <tuple>
-using namespace std;
+#include <fstream>
 
 class LexicalAnalyzer {
 public:
 	LexicalAnalyzer() {}
 
-	LexicalAnalyzer ( string sourceCode ) {
-		this->sourceCode = sourceCode;
-		currentIndex = 0;
-		row = col = 0;
-	}
-
-	LexicalAnalyzer ( FILE *fp ) {
+	LexicalAnalyzer ( string address ) {
+		sourceCode = "";
+		ifstream file ( address, ios::in );
+		if ( !file )
+			throw "no such file exists!";
+		char ch;
+		while ( !file.eof() ) {
+			file.read ( &ch, 1 );
+			sourceCode.append ( 1, ch );
+		}
+		file.close();
 		currentIndex = 0;
 		row = col = 0;
 	}
@@ -23,9 +27,9 @@ public:
 		varType var;
 		unsigned int startIndex = 0;
 		char ch = '\0';
-		short sint = 0;
+		//short sint = 0;
 		int i = 0;
-		float f = 0.0f;
+		//float f = 0.0f;
 		double d = 0.0;
 		while ( currentIndex < sourceCode.length() ) {
 
@@ -57,12 +61,14 @@ public:
 					currentIndex++;
 					col++;
 				}
+
 				//judge if the word is a key word
 				unsigned int num = isKeyWords ( sourceCode.substr ( startIndex, currentIndex - startIndex ) );
+
 				if ( num == 0 ) {	//variable
 					unsigned int start = strPool.length();
 					strPool += sourceCode.substr ( startIndex, currentIndex - startIndex );
-					unsigned int end = start + currentIndex - startIndex;
+					unsigned int end = start + currentIndex - startIndex - 1;
 					var.strIndex[0] = start;
 					var.strIndex[1] = end;
 					p = make_pair ( VAR, var );
@@ -116,13 +122,30 @@ public:
 					currentIndex++;
 					col++;
 					while ( sourceCode[currentIndex] != '"' && currentIndex < sourceCode.length() ) {
-						currentIndex++;
-						col++;
+						if ( sourceCode[currentIndex] == '\t' ) {
+							currentIndex += 4;
+							col += 4;
+						} else if ( sourceCode[currentIndex] == '\n' ) {
+							currentIndex++;
+							col = 0;
+						} else {
+							currentIndex++;
+							col++;
+						}
 					}
 					if ( currentIndex == sourceCode.length() - 1 )
 						//throw an exception where the string does not end correctly
 						throw tuple<int, int, int, string> ( row, col, 2, sourceCode.substr
 						                                     ( startIndex, currentIndex - startIndex ) );
+					else {
+						unsigned int start = strPool.length();
+						strPool += sourceCode.substr ( startIndex + 1, currentIndex - startIndex - 1 );
+						unsigned int end = start + currentIndex - startIndex - 2;
+						var.strIndex[0] = start;
+						var.strIndex[1] = end;
+						p = make_pair ( STRING, var );
+						return p;
+					}
 				case '+':
 					currentIndex++;
 					col++;
@@ -150,8 +173,16 @@ public:
 						col++;
 					flag1:
 						while ( sourceCode[currentIndex] != '*' ) {
-							currentIndex++;
-							col++;
+							if ( sourceCode[currentIndex] == '\t' ) {
+								currentIndex += 4;
+								col += 4;
+							} else if ( sourceCode[currentIndex] == '\n' ) {
+								currentIndex++;
+								col = 0;
+							} else {
+								currentIndex++;
+								col++;
+							}
 						}
 						while ( sourceCode[currentIndex] == '*' ) {
 							currentIndex++;
@@ -171,8 +202,13 @@ public:
 						currentIndex++;
 						col++;
 						while ( sourceCode[currentIndex] != '\n' ) {
-							currentIndex++;
-							col++;
+							if ( sourceCode[currentIndex] == '\t' ) {
+								currentIndex += 4;
+								col += 4;
+							} else {
+								currentIndex++;
+								col++;
+							}
 						}
 					}
 					//the following is divide
@@ -367,12 +403,3 @@ private:
 	unsigned row;		//locate the row of the wrong cause
 	unsigned col;		//locate the column of the wrong cause
 };
-
-int main() {
-	try {
-		LexicalAnalyzer la;
-		return 0;
-	} catch ( tuple<int, int, int, string> t ) {
-
-	}
-}

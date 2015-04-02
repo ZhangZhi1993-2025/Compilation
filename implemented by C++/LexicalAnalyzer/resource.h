@@ -1,5 +1,5 @@
-#ifndef _RESOURCETABLE_H
-#define _RESOURCETABLE_H
+#ifndef _RESOURCE_H
+#define _RESOURCE_H
 
 using namespace std;
 
@@ -16,11 +16,11 @@ union varType {
 	int strIndex[2];
 };
 
-string strPool = "";		//a constant pool for character pool
+static string strPool = "";		//a constant pool for character pool
 
-string keyWords[18] = {
+static string keyWords[19] = {
 	"main", "if", "else", "while", "break", "continue", "switch", "case", "default", "return",
-	"goto", "void", "int", "float", "double", "char", "unsigned", "long"
+	"goto", "void", "int", "float", "double", "char", "unsigned", "long", "short"
 };
 
 /* end of file */
@@ -47,6 +47,8 @@ string keyWords[18] = {
 #define CHAR 16
 #define UNSIGNED 17
 #define LONG 18
+#define STRING 19
+#define SHORT 20
 
 /* operator */
 #define ADD 100
@@ -77,9 +79,9 @@ string keyWords[18] = {
 /* identity symbol */
 #define VAR 200
 
-string error[3] = {
+static string error[3] = {
 	"the source code has illegal variables", "is an unrecognized identity",
 	"the string does not end correctly"
 };
 
-#endif	/* _RESOURCETABLE_H */
+#endif	/* _RESOURCE_H */
