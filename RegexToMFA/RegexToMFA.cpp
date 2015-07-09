@@ -8,13 +8,15 @@ struct NFA_Node {
     int begin;
     string regex;
     int end;
+    NFA_Node ( int b, int e, string r ) : begin ( b ), regex ( r ), end ( e ) {}
 };
 
 //used for generate the DFA queue and the MFA queue
 struct DFA_Node {
     int begin;
-    char metach;
+    char meta_ch;
     int end;
+    DFA_Node ( int b, int e, char meta ) : begin ( b ), meta_ch ( meta ), end ( e ) {}
 };
 
 //used in generate the DFA queue
@@ -33,15 +35,40 @@ struct State_Node {
  */
 
 class RegexToMFA {
+
 public:
+
     RegexToMFA ( string regex ) {
         this->regex = regex;
     }
 
-    int analyse() {
-        //int[5][5] a = new int*[5];
-        int a = 0;
+    int** analyse() {
+        makeNFA();
+        makeDFA();
+        makeMFA();
+        int **a = NULL;
         return a;
+    }
+
+private:
+
+    void makeNFA() {
+        bool isMeta = false;
+        while ( !isMeta ) {
+
+        }
+    }
+
+    string* split ( string regex ) {
+        return NULL;
+    }
+
+    void makeDFA() {
+
+    }
+
+    void makeMFA() {
+
     }
 
 private:
